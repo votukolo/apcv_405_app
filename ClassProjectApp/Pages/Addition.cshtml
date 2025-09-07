@@ -1,0 +1,26 @@
+@page
+@model ClassProjectApp.Pages.AdditionModel
+@{
+    ViewData["Title"] = "Addition";
+}
+
+<h2>Add Two Numbers</h2>
+
+<form method="post">
+    <div>
+        <label for="NumberA">First Number:</label>
+        <input type="number" asp-for="NumberA" required />
+    </div>
+    <div>
+        <label for="NumberB">Second Number:</label>
+        <input type="number" asp-for="NumberB" required />
+    </div>
+    <button type="submit">Add</button>
+</form>
+
+@if (Model.Result.HasValue)
+{
+    <div>
+        <strong>Result:</strong> @Model.Result
+    </div>
+}
