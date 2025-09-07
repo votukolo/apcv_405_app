@@ -1,0 +1,105 @@
+# Azure Release Pipeline for deploying ARM template and application
+
+variables:
+  azureServiceConnection: 'b02e1131-a6a4-4661-b721-3719738aac34'
+  azureSubscriptionId: '5c48f0f7-ae9d-4cdc-a572-9977c3115911'
+  stagingResourceGroup: 'apcv405-staging'
+  prodResourceGroup: 'apcv405-prod'
+  location: 'eastus2'
+  appServiceName: 'apcv405classproject'
+
+trigger: none
+
+stages:
+  - stage: Staging
+    displayName: 'Deploy to Staging'
+    jobs:
+      - job: DeployStagingARM
+        displayName: 'Deploy ARM Template to Staging'
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - task: AzureResourceManagerTemplateDeployment@3
+            displayName: 'Deploy ARM Template'
+            inputs:
+              deploymentScope: 'Resource Group'
+              azureResourceManagerConnection: '$(azureServiceConnection)'
+              subscriptionId: '$(azureSubscriptionId)'
+              action: 'Create Or Update Resource Group'
+              resourceGroupName: '$(stagingResourceGroup)'
+              location: '$(location)'
+              templateLocation: 'Linked artifact'
+              csmFile: 'IaC/arm_template.json'
+              deploymentMode: 'Incremental'
+              parameters: |
+                location=$(location)
+                appServiceName=$(appServiceName)-staging
+      - job: DeployStagingApp
+        displayName: 'Deploy App to Staging'
+        dependsOn: DeployStagingARM
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - download: current
+            artifact: drop
+          - task: AzureWebApp@1
+            displayName: 'Deploy to Azure Web App (Staging)'
+            inputs:
+              azureSubscription: '$(azureServiceConnection)'
+              appType: 'webApp'
+              appName: '$(appServiceName)-staging'
+              package: '$(Pipeline.Workspace)/drop/**/*.zip'
+
+  - stage: Production
+    displayName: 'Deploy to Production'
+    dependsOn: Staging
+    jobs:
+      - deployment: ManualApproval
+        displayName: 'Manual Approval Before Production'
+        environment: 'Production'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: ManualValidation@0
+                  inputs:
+                    notifyUsers: ''
+                    instructions: 'Approve to deploy to production.'
+      - job: DeployProdARM
+        displayName: 'Deploy ARM Template to Production'
+        dependsOn: ManualApproval
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - task: AzureResourceManagerTemplateDeployment@3
+            displayName: 'Deploy ARM Template'
+            inputs:
+              deploymentScope: 'Resource Group'
+              azureResourceManagerConnection: '$(azureServiceConnection)'
+              subscriptionId: '$(azureSubscriptionId)'
+              action: 'Create Or Update Resource Group'
+              resourceGroupName: '$(prodResourceGroup)'
+              location: '$(location)'
+              templateLocation: 'Linked artifact'
+              csmFile: 'IaC/arm_template.json'
+              deploymentMode: 'Incremental'
+              parameters: |
+                location=$(location)
+                appServiceName=$(appServiceName)-prod
+      - job: DeployProdApp
+        displayName: 'Deploy App to Production'
+        dependsOn: DeployProdARM
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - download: current
+            artifact: drop
+          - task: AzureWebApp@1
+            displayName: 'Deploy to Azure Web App (Production)'
+            inputs:
+              azureSubscription: '$(azureServiceConnection)'
+              appType: 'webApp'
+              appName: '$(appServiceName)-prod'
+              package: '$(Pipeline.Workspace)/drop/**/*.zip'
+
+# This pipeline deploys to staging first, then requires manual approval before deploying to production.
