@@ -25,8 +25,20 @@ steps:
 - script: dotnet test apcv_405_app.sln --configuration Release --no-build --logger trx --collect:"XPlat Code Coverage" --results-directory $(Agent.TempDirectory)/TestResults
   displayName: 'Run unit tests with coverage'
 
+- script: dotnet list apcv_405_app.sln package --vulnerable
+  displayName: 'Check for vulnerable NuGet packages'
+
+- task: MicrosoftSecurityDevOps@1
+  displayName: 'Run BinSkim Analysis'
+  inputs:
+    tools: 'binskim'
+    break: true # Fails the build on high-severity issues
+    publish: true # Publishes SARIF results
+    artifactName: 'CodeAnalysisLogs'
+
 - task: PublishCodeCoverageResults@1
   displayName: 'Publish code coverage'
   inputs:
     codeCoverageTool: 'Cobertura'
     summaryFileLocation: '$(Agent.TempDirectory)/**/coverage.cobertura.xml'
+
