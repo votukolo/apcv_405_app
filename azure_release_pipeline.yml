@@ -1,5 +1,11 @@
 # Azure Release Pipeline for deploying ARM template and application
 
+resources:
+  pipelines:
+  - pipeline: build
+    source: APCV-405-ClassProjectApp
+    trigger: true
+
 variables:
   azureServiceConnection: 'b02e1131-a6a4-4661-b721-3719738aac34'
   azureSubscriptionId: 'a5c15f1e-826b-42a0-a59e-81499cdec096'
@@ -40,7 +46,7 @@ stages:
         pool:
           vmImage: 'ubuntu-latest'
         steps:
-          - download: APCV-405-ClassProjectApp
+          - download: build
             artifact: drop
           - task: AzureWebApp@1
             displayName: 'Deploy to Azure Web App (Staging)'
@@ -84,7 +90,7 @@ stages:
                     parameters: |
                       location=$(location)
                       appServiceName=$(appServiceName)-prod
-                - download: APCV-405-ClassProjectApp
+                - download: build
                   artifact: drop
                 - task: AzureWebApp@1
                   displayName: 'Deploy to Azure Web App (Production)'
