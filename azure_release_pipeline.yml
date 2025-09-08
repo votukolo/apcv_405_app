@@ -2,7 +2,7 @@
 
 variables:
   azureServiceConnection: 'b02e1131-a6a4-4661-b721-3719738aac34'
-  azureSubscriptionId: '5c48f0f7-ae9d-4cdc-a572-9977c3115911'
+  azureSubscriptionId: 'a5c15f1e-826b-42a0-a59e-81499cdec096'
   stagingResourceGroup: 'apcv405-staging'
   prodResourceGroup: 'apcv405-prod'
   location: 'eastus2'
