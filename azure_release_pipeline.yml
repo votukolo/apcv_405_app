@@ -58,7 +58,7 @@ stages:
               azureSubscription: '$(azureServiceConnection)'
               appType: 'webApp'
               appName: '$(appServiceNameStaging)'
-              package: '$(Pipeline.Workspace)/drop/ClassProjectApp.zip'
+              package: '$(Pipeline.Workspace)/build/drop/ClassProjectApp.zip'
 
   - stage: Production
     displayName: 'Deploy to Production'
@@ -100,6 +100,6 @@ stages:
                     azureSubscription: '$(azureServiceConnection)'
                     appType: 'webApp'
                     appName: '$(appServiceNameProd)'
-                    package: '$(Pipeline.Workspace)/drop/ClassProjectApp.zip'
+                    package: '$(Pipeline.Workspace)/build/drop/ClassProjectApp.zip'
 
 # This pipeline deploys to staging first, then requires manual approval before deploying to production.
