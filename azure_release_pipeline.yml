@@ -50,7 +50,7 @@ stages:
             artifact: drop
           - script: |
               echo "Listing contents of drop folder:"
-              ls -R $(Pipeline.Workspace)/drop
+              ls -R $(Pipeline.Workspace)/build/drop
             displayName: 'Debug Artifact Contents'
           - task: AzureWebApp@1
             displayName: 'Deploy to Azure Web App (Staging)'
