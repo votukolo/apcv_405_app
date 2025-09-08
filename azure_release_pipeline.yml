@@ -13,6 +13,8 @@ variables:
   prodResourceGroup: 'apcv405-prod'
   location: 'eastus2'
   appServiceName: 'apcv405classproject'
+  appServiceNameStaging: 'apcv405classproject-staging'
+  appServiceNameProd: 'apcv405classproject-prod'
 
 trigger: none
 
@@ -39,7 +41,7 @@ stages:
               deploymentMode: 'Incremental'
               parameters: |
                 location=$(location)
-                appServiceName=$(appServiceName)-staging
+                appServiceName=$(appServiceNameStaging)
       - job: DeployStagingApp
         displayName: 'Deploy App to Staging'
         dependsOn: DeployStagingARM
@@ -53,7 +55,7 @@ stages:
             inputs:
               azureSubscription: '$(azureServiceConnection)'
               appType: 'webApp'
-              appName: '$(appServiceName)-staging'
+              appName: '$(appServiceNameStaging)'
               package: '$(Pipeline.Workspace)/drop/**/*.zip'
 
   - stage: Production
@@ -89,7 +91,7 @@ stages:
                     deploymentMode: 'Incremental'
                     parameters: |
                       location=$(location)
-                      appServiceName=$(appServiceName)-prod
+                      appServiceName=$(appServiceNameProd)
                 - download: build
                   artifact: drop
                 - task: AzureWebApp@1
@@ -97,7 +99,7 @@ stages:
                   inputs:
                     azureSubscription: '$(azureServiceConnection)'
                     appType: 'webApp'
-                    appName: '$(appServiceName)-prod'
+                    appName: '$(appServiceNameProd)'
                     package: '$(Pipeline.Workspace)/drop/**/*.zip'
 
 # This pipeline deploys to staging first, then requires manual approval before deploying to production.
