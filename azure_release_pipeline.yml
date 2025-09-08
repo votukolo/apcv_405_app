@@ -54,17 +54,21 @@ stages:
     displayName: 'Deploy to Production'
     dependsOn: Staging
     jobs:
+      - job: ManualApproval
+        displayName: 'Manual Approval Before Production'
+        pool: server
+        steps:
+          - task: ManualValidation@0
+            inputs:
+              instructions: 'Approve to deploy to production.'
       - deployment: DeployToProduction
         displayName: 'Deploy to Production Environment'
         environment: 'Production'
+        dependsOn: ManualApproval
         strategy:
           runOnce:
             deploy:
               steps:
-                - task: ManualValidation@0
-                  displayName: 'Manual Approval Before Production'
-                  inputs:
-                    instructions: 'Approve to deploy to production.'
                 - task: AzureResourceManagerTemplateDeployment@3
                   displayName: 'Deploy ARM Template'
                   inputs:
