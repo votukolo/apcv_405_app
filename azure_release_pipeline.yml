@@ -40,9 +40,8 @@ stages:
         pool:
           vmImage: 'ubuntu-latest'
         steps:
-          - download: pipeline
+          - download: APCV-405-ClassProjectApp
             artifact: drop
-            source: APCV-405-ClassProjectApp
           - task: AzureWebApp@1
             displayName: 'Deploy to Azure Web App (Staging)'
             inputs:
@@ -85,9 +84,8 @@ stages:
                     parameters: |
                       location=$(location)
                       appServiceName=$(appServiceName)-prod
-                - download: pipeline
+                - download: APCV-405-ClassProjectApp
                   artifact: drop
-                  source: APCV-405-ClassProjectApp
                 - task: AzureWebApp@1
                   displayName: 'Deploy to Azure Web App (Production)'
                   inputs:
