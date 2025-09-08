@@ -43,7 +43,7 @@
         "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', concat(parameters('appServiceName'), '-plan'))]",
         "siteConfig": {
           "netFrameworkVersion": "",
-          "linuxFxVersion": "DOTNETCORE|8.0"
+          "linuxFxVersion": "DOTNET|8.0"
         }
       }
     }
