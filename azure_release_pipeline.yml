@@ -39,7 +39,7 @@ stages:
               templateLocation: 'Linked artifact'
               csmFile: 'IaC/arm_template.json'
               deploymentMode: 'Incremental'
-              csmParameterFilesLink: 'IaC/staging_params.json'
+              csmParametersFile: 'IaC/staging_params.json'
       - job: DeployStagingApp
         displayName: 'Deploy App to Staging'
         dependsOn: DeployStagingARM
@@ -87,7 +87,7 @@ stages:
                     templateLocation: 'Linked artifact'
                     csmFile: 'IaC/arm_template.json'
                     deploymentMode: 'Incremental'
-                    csmParameterFilesLink: 'IaC/prod_params.json'
+                    csmParametersFile: 'IaC/prod_params.json'
                 - download: build
                   artifact: drop
                 - task: AzureWebApp@1
