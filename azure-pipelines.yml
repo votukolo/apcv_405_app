@@ -42,3 +42,23 @@ steps:
     codeCoverageTool: 'Cobertura'
     summaryFileLocation: '$(Agent.TempDirectory)/**/coverage.cobertura.xml'
 
+# Publish web app
+- script: dotnet publish ClassProjectApp/ClassProjectApp.csproj --configuration Release --output $(Build.ArtifactStagingDirectory)/publish
+  displayName: 'Publish web app'
+
+- task: ArchiveFiles@2
+  displayName: 'Archive published web app'
+  inputs:
+    rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/publish'
+    includeRootFolder: false
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/ClassProjectApp.zip'
+    replaceExistingArchive: true
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish web app artifact'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/ClassProjectApp.zip'
+    ArtifactName: 'drop'
+    publishLocation: 'Container'
+
