@@ -71,35 +71,33 @@ stages:
           - task: ManualValidation@0
             inputs:
               instructions: 'Approve to deploy to production.'
-      - deployment: DeployToProduction
+      - job: DeployToProduction
         displayName: 'Deploy to Production Environment'
-        environment: 'Production'
         dependsOn: ManualApproval
-        strategy:
-          runOnce:
-            deploy:
-              steps:
-                - task: AzureResourceManagerTemplateDeployment@3
-                  displayName: 'Deploy ARM Template'
-                  inputs:
-                    deploymentScope: 'Resource Group'
-                    azureResourceManagerConnection: '$(azureServiceConnection)'
-                    subscriptionId: '$(azureSubscriptionId)'
-                    action: 'Create Or Update Resource Group'
-                    resourceGroupName: '$(prodResourceGroup)'
-                    location: '$(location)'
-                    templateLocation: 'Linked artifact'
-                    csmFile: 'IaC/arm_template.json'
-                    deploymentMode: 'Incremental'
-                    csmParametersFile: 'IaC/prod_params.json'
-                - download: build
-                  artifact: drop
-                - task: AzureWebApp@1
-                  displayName: 'Deploy to Azure Web App (Production)'
-                  inputs:
-                    azureSubscription: '$(azureServiceConnection)'
-                    appType: 'webApp'
-                    appName: '$(appServiceNameProd)'
-                    package: '$(Pipeline.Workspace)/build/drop/ClassProjectApp.zip'
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - task: AzureResourceManagerTemplateDeployment@3
+            displayName: 'Deploy ARM Template'
+            inputs:
+              deploymentScope: 'Resource Group'
+              azureResourceManagerConnection: '$(azureServiceConnection)'
+              subscriptionId: '$(azureSubscriptionId)'
+              action: 'Create Or Update Resource Group'
+              resourceGroupName: '$(prodResourceGroup)'
+              location: '$(location)'
+              templateLocation: 'Linked artifact'
+              csmFile: 'IaC/arm_template.json'
+              deploymentMode: 'Incremental'
+              csmParametersFile: 'IaC/prod_params.json'
+          - download: build
+            artifact: drop
+          - task: AzureWebApp@1
+            displayName: 'Deploy to Azure Web App (Production)'
+            inputs:
+              azureSubscription: '$(azureServiceConnection)'
+              appType: 'webApp'
+              appName: '$(appServiceNameProd)'
+              package: '$(Pipeline.Workspace)/build/drop/ClassProjectApp.zip'
 
 # This pipeline deploys to staging first, then requires manual approval before deploying to production.
