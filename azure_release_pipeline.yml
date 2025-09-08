@@ -48,13 +48,17 @@ stages:
         steps:
           - download: build
             artifact: drop
+          - script: |
+              echo "Listing contents of drop folder:"
+              ls -R $(Pipeline.Workspace)/drop
+            displayName: 'Debug Artifact Contents'
           - task: AzureWebApp@1
             displayName: 'Deploy to Azure Web App (Staging)'
             inputs:
               azureSubscription: '$(azureServiceConnection)'
               appType: 'webApp'
               appName: '$(appServiceNameStaging)'
-              package: '$(Pipeline.Workspace)/drop/**/*.zip'
+              package: '$(Pipeline.Workspace)/drop/ClassProjectApp.zip'
 
   - stage: Production
     displayName: 'Deploy to Production'
@@ -96,6 +100,6 @@ stages:
                     azureSubscription: '$(azureServiceConnection)'
                     appType: 'webApp'
                     appName: '$(appServiceNameProd)'
-                    package: '$(Pipeline.Workspace)/drop/**/*.zip'
+                    package: '$(Pipeline.Workspace)/drop/ClassProjectApp.zip'
 
 # This pipeline deploys to staging first, then requires manual approval before deploying to production.
