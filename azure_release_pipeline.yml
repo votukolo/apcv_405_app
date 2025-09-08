@@ -3,7 +3,7 @@
 resources:
   pipelines:
   - pipeline: build
-    source: 7
+    source: APCV-405-ClassProjectApp
     trigger: true
 
 variables:
