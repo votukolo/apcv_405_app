@@ -1,0 +1,25 @@
+{
+  "id": null,
+  "uid": "apcv405-basic",
+  "title": "APCV405 Basic Metrics",
+  "tags": ["apcv405"],
+  "timezone": "browser",
+  "schemaVersion": 36,
+  "version": 1,
+  "refresh": "10s",
+  "panels": [
+    {
+      "type": "graph",
+      "title": "Sample Request Rate",
+      "targets": [
+        {
+          "expr": "rate(http_requests_total[1m])",
+          "legendFormat": "Requests",
+          "refId": "A"
+        }
+      ],
+      "datasource": "Prometheus",
+      "gridPos": { "x": 0, "y": 0, "w": 24, "h": 8 }
+    }
+  ]
+}
