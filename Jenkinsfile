@@ -57,6 +57,7 @@ pipeline {
             }
        }
     }
+    }
         post {
         always {
             // Clean up Docker container to avoid port conflict
@@ -64,6 +65,7 @@ pipeline {
         }
     }
 }
+
 
 
 
