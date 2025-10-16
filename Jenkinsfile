@@ -27,7 +27,7 @@ pipeline {
 
         stage('Push Docker Image to DockerHub') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     bat """
                         echo "%DOCKER_PASS%" | docker login -u "%DOCKER_USER%" --password-stdin
                         docker push votukolo/apcv_405_app
@@ -64,6 +64,7 @@ pipeline {
         }
     }
 }
+
 
 
 
