@@ -21,7 +21,7 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                bat 'docker build -t $IMAGE_NAME .'
+                bat 'docker build -t  votukolo/apcv_405_app .'
             }
         }
 
@@ -30,7 +30,7 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     bat """
                         echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-                        docker push $IMAGE_NAME
+                        docker push votukolo/apcv_405_app
                     """
                 }
             }
@@ -38,7 +38,7 @@ pipeline {
 
         stage('Run Docker Container') {
             steps {
-                bat 'docker run -d -p 9090:8080 --name app_container $IMAGE_NAME'
+                bat 'docker run -d -p 9090:8080 --name app_container votukolo/apcv_405_app'
             }
         }
 
@@ -64,6 +64,7 @@ pipeline {
         }
     }
 }
+
 
 
 
