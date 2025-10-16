@@ -41,21 +41,22 @@ pipeline {
             }
         }
 
-        stage('Health Check') {
-            steps {
-                script {
-                    sleep(5) // Give container time to start
-                    def response = bat(script: 'curl -s -o NUL -w \"%{http_code}\" http://localhost:9090/health', returnStdout: true).trim()
-                    if (response != '200') {
-                        error("Health check failed. Status code: ${response}")
-                    } else {
-                        echo "Health check passed ✅"
-                    }
-                }
+  stage('Health Check') {
+    steps {
+        script {
+            sleep(5) // Give container time to start
+            def status = powershell(
+                script: '$r = Invoke-WebRequest -Uri http://localhost:9090/health -UseBasicParsing -TimeoutSec 5; $r.StatusCode',
+                returnStdout: true
+            ).trim()
+            if (status != '200') {
+                error("Health check failed. Status code: ${status}")
+            } else {
+                echo "Health check passed ✅"
             }
         }
     }
-
+}
     post {
         always {
             // Clean up Docker container to avoid port conflict
@@ -63,6 +64,7 @@ pipeline {
         }
     }
 }
+
 
 
 
