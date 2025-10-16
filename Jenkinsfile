@@ -15,7 +15,7 @@ pipeline {
 
         stage('Run Tests') {
             steps {
-                sh 'dotnet test ClassProjectApp.Tests/ClassProjectApp.Tests.csproj'
+                sh 'dotnet test'
             }
         }
 
@@ -64,3 +64,4 @@ pipeline {
         }
     }
 }
+
