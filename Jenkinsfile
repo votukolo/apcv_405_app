@@ -15,20 +15,20 @@ pipeline {
 
         stage('Run Tests') {
             steps {
-                sh 'dotnet test'
+                bat 'dotnet test'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t $IMAGE_NAME .'
+                bat 'docker build -t $IMAGE_NAME .'
             }
         }
 
         stage('Push Docker Image to DockerHub') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    sh """
+                    bat """
                         echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
                         docker push $IMAGE_NAME
                     """
@@ -38,7 +38,7 @@ pipeline {
 
         stage('Run Docker Container') {
             steps {
-                sh 'docker run -d -p 9090:8080 --name app_container $IMAGE_NAME'
+                bat 'docker run -d -p 9090:8080 --name app_container $IMAGE_NAME'
             }
         }
 
@@ -60,9 +60,10 @@ pipeline {
     post {
         always {
             // Clean up Docker container to avoid port conflict
-            sh 'docker rm -f app_container || true'
+            bat 'docker rm -f app_container || true'
         }
     }
 }
+
 
 
