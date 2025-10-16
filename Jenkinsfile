@@ -45,7 +45,7 @@ pipeline {
             steps {
                 script {
                     sleep(5) // Give container time to start
-                    def response = bat(script: 'curl -s -o NUL -w "%{http_code}" http://localhost:9090/health', returnStdout: true).trim()
+                    def response = bat(script: 'curl -s -o NUL -w \"%{http_code}\" http://localhost:9090/health', returnStdout: true).trim()
                     if (response != '200') {
                         error("Health check failed. Status code: ${response}")
                     } else {
@@ -63,6 +63,7 @@ pipeline {
         }
     }
 }
+
 
 
 
